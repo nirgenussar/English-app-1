@@ -391,17 +391,17 @@ function setProgress(){
 }
 
 // One-time questions for the adult. Everything the child is asked later is built from these answers.
-function setupScreen(){
+function setupScreen(fresh){
   order=[]; setProgress();
   $('ttl').textContent = 'לפני שמתחילים';
-  const pr = Object.assign({he:'', en:'', age:null, gender:null, bro:false, sis:false}, PROFILE||{});
+  const pr = Object.assign({he:'', en:'', age:null, gender:null, bro:false, sis:false}, fresh ? {} : (PROFILE||{}));
   const chip = (id, label, on) => `<button type="button" class="chipb" id="${id}" aria-pressed="${on?'true':'false'}">${label}</button>`;
   screen(`<h2 class="sm">👋 5 שאלות קצרות למבוגר</h2><p class="hint">כדי להתאים את התרגול לילד/ה</p>
     <div class="names">
       <div class="namebox"><label for="kidName">1. השם בעברית</label>
-        <input id="kidName" type="text" autocomplete="off" maxlength="20" value="${esc(pr.he)}" placeholder="עופרי"></div>
+        <input id="kidName" type="text" autocomplete="off" maxlength="20" value="${esc(pr.he)}" placeholder="לדוגמה: דני"></div>
       <div class="namebox"><label for="kidNameEn">2. השם באנגלית</label>
-        <input id="kidNameEn" type="text" autocomplete="off" autocapitalize="words" spellcheck="false" maxlength="20" lang="en" value="${esc(pr.en)}" placeholder="Ofri"></div>
+        <input id="kidNameEn" type="text" autocomplete="off" autocapitalize="words" spellcheck="false" maxlength="20" lang="en" value="${esc(pr.en)}" placeholder="e.g. Dani"></div>
     </div>
     <div class="fld"><span class="lbl">3. גיל</span>
       <div class="chips">${[6,7,8,9,10,11].map(n=>chip('age'+n, n, pr.age===n)).join('')}</div></div>
@@ -439,9 +439,9 @@ function startScreen(){
       <button class="btn big" id="allow">🎤 אישור מיקרופון</button>`}</div>
     <label class="tog"><input type="checkbox" id="shuf" ${shuffle?'checked':''}> לערבב את סדר המילים</label>
     <div class="modes"><button class="btn" id="go" ${micReady?'':'disabled'}>🎤 מילים ומשפטים</button><button class="btn blue" id="goQA">💬 שאלה ותשובה</button></div>
-    <button class="linkb" id="editSetup">✏️ שינוי פרטים (למבוגר)</button>`, 'center hero');
+    <button class="btn ghost sm" id="editSetup">👤 לא ${esc(KID)}? לשינוי פרטים</button>`, 'center hero');
   $('shuf').onchange = ev => shuffle = ev.target.checked;
-  $('editSetup').onclick = setupScreen;
+  $('editSetup').onclick = () => setupScreen(true);
   if ($('allow')) $('allow').onclick = async () => {
     $('allow').disabled = true; $('allow').textContent = 'מחכים לאישור…';
     const r = await requestMic();
@@ -773,4 +773,3 @@ startScreen();
 
 </body>
 </html>
- 
